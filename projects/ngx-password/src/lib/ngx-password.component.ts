@@ -1,26 +1,24 @@
 import { Component, Input } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'ngx-password',
   templateUrl: './ngx-password.component.html',
   styleUrls: ['./ngx-password.component.scss'],
+  standalone: true,
+  imports: [FormsModule],
 })
 export class NgxPasswordComponent {
-  @Input() password: string = 'testing123';
+  @Input() password: string = '';
   // strength is a number between 0 and 100
   passwordStrength: number = 0;
 
-  constructor() {}
-
-  ngOnInit() {
+  public onInput() {
+    console.log('Password changed', this.password);
     this.passwordStrength = this.calculatePasswordStrength(this.password);
   }
 
-  onInput() {
-    this.passwordStrength = this.calculatePasswordStrength(this.password);
-  }
-
-  calculatePasswordStrength(password: string): number {
+  private calculatePasswordStrength(password: string): number {
     let strength = 0;
     if (password.length > 0) {
       // Add points for password length
@@ -47,11 +45,11 @@ export class NgxPasswordComponent {
     return Math.max(0, Math.min(100, strength));
   }
 
-  countOccurences(password: string, pattern: RegExp): number {
+  private countOccurences(password: string, pattern: RegExp): number {
     return (password.match(pattern) || []).length;
   }
 
-  countRepeatingChars(password: string): number {
+  private countRepeatingChars(password: string): number {
     let repeatingChars = 0;
     for (let i = 0; i < password.length - 1; i++) {
       if (password.charAt(i) === password.charAt(i + 1)) {
