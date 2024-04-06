@@ -9,53 +9,51 @@ import { FormsModule } from '@angular/forms';
   imports: [FormsModule],
 })
 export class NgxPasswordComponent {
-  @Input() password: string = '';
+  @Input() passwordInput: string = '';
   // strength is a number between 0 and 100
   passwordStrength: number = 0;
 
   public onInput() {
-    console.log('Password changed', this.password);
-    this.passwordStrength = this.calculatePasswordStrength(this.password);
+    console.log('Password', this.passwordInput);
+    this.calculatePasswordStrength(this.passwordInput);
   }
 
-  private calculatePasswordStrength(password: string): number {
-    let strength = 0;
-    if (password.length > 0) {
-      // Add points for password length
-      strength += password.length * 4;
-      // Add points for uppercase letters
-      strength += this.countOccurences(password, /[A-Z]/) * 2;
-      // Add points for lowercase letters
-      strength += this.countOccurences(password, /[a-z]/) * 2;
-      // Add points for numbers
-      strength += this.countOccurences(password, /[0-9]/) * 4;
-      // Add points for special characters
-      strength += this.countOccurences(password, /[^a-zA-Z0-9]/) * 6;
-      // Add points for consecutive uppercase letters
-      strength -= this.countOccurences(password, /[A-Z]{2,}/) * 2;
-      // Add points for consecutive lowercase letters
-      strength -= this.countOccurences(password, /[a-z]{2,}/) * 2;
-      // Add points for consecutive numbers
-      strength -= this.countOccurences(password, /[0-9]{2,}/) * 2;
-      // Add points for consecutive special characters
-      strength -= this.countOccurences(password, /[^a-zA-Z0-9]{2,}/) * 2;
-      // Deduct points for repeating characters
-      strength -= this.countRepeatingChars(password) * 2;
+  private calculatePasswordStrength(password: string) {
+    var strength = 0;
+    if (password.match(/[a-z]+/)) {
+      strength += 1;
     }
-    return Math.max(0, Math.min(100, strength));
-  }
-
-  private countOccurences(password: string, pattern: RegExp): number {
-    return (password.match(pattern) || []).length;
-  }
-
-  private countRepeatingChars(password: string): number {
-    let repeatingChars = 0;
-    for (let i = 0; i < password.length - 1; i++) {
-      if (password.charAt(i) === password.charAt(i + 1)) {
-        repeatingChars++;
-      }
+    if (password.match(/[A-Z]+/)) {
+      strength += 1;
     }
-    return repeatingChars;
+    if (password.match(/[0-9]+/)) {
+      strength += 1;
+    }
+    if (password.match(/[$@#&!]+/)) {
+      strength += 1;
+    }
+
+    switch (strength) {
+      case 0:
+        this.passwordStrength = 0;
+        break;
+
+      case 1:
+        this.passwordStrength = 25;
+        break;
+
+      case 2:
+        this.passwordStrength = 50;
+        break;
+
+      case 3:
+        this.passwordStrength = 75;
+        break;
+
+      case 4:
+        this.passwordStrength = 100;
+        break;
+    }
+    console.log('Password strength', this.passwordStrength);
   }
 }
